@@ -1,0 +1,136 @@
+TOPIC: Graphs
+
+## Graph Fundamentals
+A graph G = (V, E) has vertices (nodes) and edges (connections).
+
+Directed vs undirected: Directed edges have a direction (one-way), undirected are bidirectional.
+Weighted vs unweighted: Edges may have weights (costs, distances).
+Cyclic vs acyclic: DAG (Directed Acyclic Graph) has no cycles. Trees are a special case of DAGs.
+
+Degree: Number of edges incident to a node. In directed graphs: in-degree (incoming) and out-degree (outgoing).
+
+---
+
+## Graph Representations
+
+Adjacency List: Dictionary/array where adj[u] = list of neighbors. Preferred for sparse graphs.
+- Space: O(V + E)
+- Check edge (u,v): O(degree(u))
+- Iterate neighbors: O(degree(u))
+
+Adjacency Matrix: 2D array where matrix[u][v] = 1 (or weight) if edge exists. For dense graphs.
+- Space: O(V^2)
+- Check edge (u,v): O(1)
+- Iterate neighbors: O(V)
+
+Edge List: Simple list of (u, v) or (u, v, weight) tuples. Used in some algorithms (Kruskal's).
+
+---
+
+## Breadth-First Search (BFS)
+BFS explores all neighbors at the current level before going deeper. Uses a queue. Guarantees shortest path in unweighted graphs.
+
+```
+from collections import deque
+def bfs(graph, start):
+    visited = set([start])
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+```
+
+Time: O(V + E). Space: O(V).
+
+Applications: Shortest path (unweighted), level-order traversal, connected components, bipartiteness check.
+
+---
+
+## Depth-First Search (DFS)
+DFS explores as far as possible before backtracking. Uses recursion (or explicit stack).
+
+```
+def dfs(graph, node, visited):
+    visited.add(node)
+    for neighbor in graph[node]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+```
+
+Time: O(V + E). Space: O(V) for recursion stack.
+
+Applications: Cycle detection, topological sort, connected components, finding paths, strongly connected components.
+
+---
+
+## Topological Sort
+Only applicable to DAGs. An ordering where for every directed edge u→v, u comes before v. Used in task scheduling, build systems, course prerequisites.
+
+Kahn's Algorithm (BFS-based):
+1. Compute in-degree for all nodes.
+2. Add all nodes with in-degree 0 to queue.
+3. Process each node: reduce in-degree of neighbors. Add neighbors with in-degree 0 to queue.
+4. If processed count != V, cycle exists.
+
+DFS-based: Run DFS. After all neighbors are processed, push node to stack. Reverse the stack.
+
+---
+
+## Cycle Detection
+Undirected graph: DFS — if we reach a visited node that is not the parent, cycle exists.
+
+Directed graph: DFS with three states — white (unvisited), gray (in current DFS path), black (fully processed). Cycle exists if we reach a gray node.
+
+---
+
+## Union-Find (Disjoint Set Union)
+Efficiently groups elements into disjoint sets. Supports:
+- find(x): find the root/representative of x's set
+- union(x, y): merge x's and y's sets
+
+Optimizations:
+- Path compression: During find, make every node point directly to root.
+- Union by rank: Attach smaller tree under larger to keep tree flat.
+
+Both optimizations together give near O(1) amortized per operation (inverse Ackermann function).
+
+Applications: Kruskal's MST, detecting cycles, connected components, number of islands.
+
+---
+
+## Shortest Path Algorithms
+
+Dijkstra's Algorithm (non-negative weights):
+Use a min-heap (priority queue). Start with source at distance 0. Greedily expand the closest unvisited node. Update neighbors' distances.
+Time: O((V + E) log V).
+
+Bellman-Ford (handles negative weights):
+Relax all edges V-1 times. If a distance updates on the Vth pass, a negative cycle exists.
+Time: O(V * E).
+
+Floyd-Warshall (all-pairs shortest paths):
+DP. dist[i][j] = min distance from i to j. For each intermediate node k, update dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]).
+Time: O(V^3).
+
+---
+
+## Minimum Spanning Tree (MST)
+
+Kruskal's: Sort all edges by weight. Use Union-Find to add edges greedily (skip edges creating cycles). O(E log E).
+
+Prim's: Grow MST one vertex at a time. Always add the cheapest edge connecting MST to a non-MST vertex. Use a priority queue. O((V + E) log V).
+
+---
+
+## Common Graph Patterns
+
+Number of islands: Grid as a graph. BFS/DFS from each unvisited land cell, mark all connected land. Count starting points.
+
+Course schedule (cycle detection in DAG): Build directed graph from prerequisites. Topological sort — if all nodes processed, no cycle → possible. Otherwise impossible.
+
+Clone graph: BFS/DFS. Use hash map from original node to clone.
+
+Word ladder: BFS on word graph. Each word is a node; edges connect words differing by one letter.

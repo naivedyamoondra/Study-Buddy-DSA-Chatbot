@@ -1,0 +1,99 @@
+TOPIC: Dynamic Programming
+
+## What is Dynamic Programming
+Dynamic Programming (DP) is an optimization technique for problems with overlapping subproblems and optimal substructure.
+
+Overlapping subproblems: The same subproblems are solved multiple times. DP stores solutions to avoid recomputation.
+
+Optimal substructure: The optimal solution to the problem can be built from optimal solutions of its subproblems.
+
+When to use DP: Count ways to do something, minimize/maximize a value, check if something is possible, where brute force is exponential and greedy doesn't work.
+
+---
+
+## Two Approaches
+
+Top-Down (Memoization): Write the natural recursive solution. Add a cache (dictionary or array) to store results of subproblems. Check cache before computing.
+
+```python
+from functools import lru_cache
+@lru_cache(maxsize=None)
+def fib(n):
+    if n <= 1: return n
+    return fib(n-1) + fib(n-2)
+```
+
+Bottom-Up (Tabulation): Fill a DP table iteratively from smallest subproblems to the full problem. No recursion overhead. More memory-efficient (can often reduce to O(1) space).
+
+```python
+def fib(n):
+    dp = [0, 1]
+    for i in range(2, n+1):
+        dp.append(dp[-1] + dp[-2])
+    return dp[n]
+```
+
+---
+
+## Classic 1D DP Problems
+
+Fibonacci: dp[i] = dp[i-1] + dp[i-2]. Base: dp[0]=0, dp[1]=1. Space-optimized to O(1) with two variables.
+
+Climbing Stairs: You can climb 1 or 2 steps. Ways to reach step n = ways to reach n-1 + ways to reach n-2. Same as Fibonacci.
+
+House Robber: Cannot rob adjacent houses. dp[i] = max(dp[i-1], dp[i-2] + nums[i]). Space-optimized to O(1).
+
+Maximum Subarray (Kadane's): dp[i] = max(nums[i], dp[i-1] + nums[i]). Represents max subarray ending at i.
+
+Coin Change (minimum coins): dp[amount] = min coins to make amount. For each coin, dp[a] = min(dp[a], dp[a-coin]+1). Initialize dp[0]=0, rest=infinity.
+
+Coin Change (number of ways): dp[amount] = number of ways. For each coin: dp[a] += dp[a-coin]. Order matters (combinations vs permutations).
+
+---
+
+## Classic 2D DP Problems
+
+Longest Common Subsequence (LCS): dp[i][j] = LCS of first i characters of s and first j of t.
+- If s[i]==t[j]: dp[i][j] = dp[i-1][j-1] + 1
+- Else: dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+
+Longest Increasing Subsequence (LIS): dp[i] = length of LIS ending at index i. dp[i] = max(dp[j]+1 for all j<i where nums[j]<nums[i]). O(n^2). Patience sorting achieves O(n log n).
+
+0/1 Knapsack: dp[i][w] = max value using first i items with capacity w.
+- If item weight > w: dp[i][w] = dp[i-1][w]
+- Else: dp[i][w] = max(dp[i-1][w], dp[i-1][w-weight[i]] + value[i])
+
+Edit Distance (Levenshtein): dp[i][j] = min operations to convert s[0..i] to t[0..j].
+- If s[i]==t[j]: dp[i][j] = dp[i-1][j-1]
+- Else: dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]) (delete, insert, replace)
+
+Unique Paths: Grid navigation. dp[i][j] = paths to cell (i,j) = dp[i-1][j] + dp[i][j-1].
+
+---
+
+## Interval DP
+Problems where the state depends on a subarray or interval [i, j].
+
+Matrix Chain Multiplication: dp[i][j] = min cost to multiply matrices i through j. Try every split point k. O(n^3).
+
+Palindrome Partitioning: dp[i][j] = min cuts for substring i to j. Or check dp[i][j] = is substring palindrome.
+
+Burst Balloons: dp[i][j] = max coins from balloons i+1 to j-1. Try each balloon k as last to burst.
+
+---
+
+## State Machine DP
+Problems with distinct states and transitions between them.
+
+Best Time to Buy/Sell Stock with Cooldown: States — holding stock, not holding (can buy), cooldown.
+Best Time to Buy/Sell Stock with Transaction Limit: State dp[k][0/1] = max profit with k transactions and not/holding stock.
+
+---
+
+## How to Approach a DP Problem
+1. Identify if it's a DP problem (optimization, counting, overlapping subproblems)
+2. Define state: what does dp[i] or dp[i][j] represent?
+3. Write recurrence: how does dp[i] relate to smaller subproblems?
+4. Identify base cases
+5. Determine computation order (bottom-up: which states are needed before others?)
+6. Optimize space if possible (often from O(n^2) to O(n) by keeping only last row)

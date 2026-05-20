@@ -1,0 +1,105 @@
+TOPIC: Trees
+
+## Tree Basics
+A tree is a hierarchical data structure with nodes connected by edges. Each tree has one root node. Every node (except root) has exactly one parent. Nodes with no children are leaves.
+
+Key terms:
+- Height of tree: longest path from root to a leaf
+- Depth of node: distance from root
+- Subtree: a node and all its descendants
+- Binary tree: each node has at most 2 children (left, right)
+
+---
+
+## Binary Tree Traversals
+
+Inorder (Left, Root, Right): Visits nodes in sorted order for a BST.
+```
+def inorder(node):
+    if not node: return
+    inorder(node.left)
+    visit(node)
+    inorder(node.right)
+```
+
+Preorder (Root, Left, Right): Used to serialize/copy a tree.
+
+Postorder (Left, Right, Root): Used to delete a tree, evaluate expression trees.
+
+Level-order (BFS): Use a queue. Process all nodes at depth d before depth d+1. Good for finding shortest path, right-side view.
+
+Iterative traversals: Use an explicit stack to simulate the call stack. Inorder iterative: go as far left as possible, then process, then go right.
+
+---
+
+## Binary Search Tree (BST)
+A BST is a binary tree where for every node: all values in left subtree < node value < all values in right subtree.
+
+BST operations:
+- Search: O(h) where h is height. O(log n) for balanced, O(n) worst case (skewed)
+- Insert: Find correct position (like search), insert as leaf
+- Delete: Three cases — (1) no children: just remove; (2) one child: replace node with child; (3) two children: replace with inorder successor (leftmost in right subtree), then delete the successor
+
+Validate BST: Pass min/max bounds down the tree. Root has no bounds. Left child must have value < current node's value. Use (min_val, node.val) for left and (node.val, max_val) for right.
+
+Inorder traversal of BST gives sorted sequence.
+
+---
+
+## Balanced Trees
+A balanced binary tree has height O(log n), ensuring efficient operations.
+
+AVL Tree: Height-balanced. Balance factor (height of left subtree - height of right subtree) must be -1, 0, or 1 for every node. Rotations maintain balance on insert/delete.
+
+Red-Black Tree: Used in most language standard libraries (Java TreeMap, C++ map). Looser balance than AVL (height ≤ 2 log n). Faster insertions/deletions.
+
+---
+
+## Common Tree Patterns
+
+Diameter of binary tree: At each node, diameter passing through it = left_height + right_height. Track global max. Post-order traversal (height of node = 1 + max(left, right)).
+
+Lowest Common Ancestor (LCA): Recursive approach — if both nodes are in different subtrees of root, LCA is root. In BST: if both values < root, go left; if both > root, go right; else root is LCA.
+
+Path sum problems: DFS carrying current sum. At each leaf, check if sum equals target. For all paths (not just root-to-leaf), use prefix sums with a hash map.
+
+Serialize/Deserialize binary tree: Preorder traversal with null markers. Deserialize by reading preorder sequence and using a queue or index.
+
+Check if two trees are identical: Both null → true. One null → false. Vals must match, then recursively check left and right.
+
+Invert binary tree: Swap left and right children at every node recursively.
+
+---
+
+## Trie (Prefix Tree)
+A trie is a tree structure for storing strings where each path from root represents a prefix.
+
+Node structure: A dictionary of children (one per character) and a boolean `is_end`.
+
+Insert: For each character, create node if not exists, advance.
+Search: Traverse characters. Return is_end at last character.
+StartsWith (prefix search): Traverse characters. Return True if all exist.
+
+Time: O(L) for all operations where L is word length.
+
+Applications: Autocomplete, spell checking, IP routing, word search in grid.
+
+---
+
+## Segment Tree
+Segment tree stores information about intervals/segments. Supports range queries and point updates in O(log n).
+
+Built recursively — each node stores aggregate (sum, min, max) for a range. Leaf nodes are individual elements. Internal node covers union of children's ranges.
+
+Applications: Range sum queries with updates, range minimum/maximum queries.
+
+---
+
+## Time Complexity Summary
+| Operation | Balanced BST | Unbalanced BST |
+|-----------|-------------|----------------|
+| Search | O(log n) | O(n) |
+| Insert | O(log n) | O(n) |
+| Delete | O(log n) | O(n) |
+| Traversal | O(n) | O(n) |
+| Trie ops | O(L) | O(L) |

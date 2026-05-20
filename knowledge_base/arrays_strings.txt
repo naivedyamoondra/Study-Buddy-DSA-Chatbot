@@ -1,0 +1,81 @@
+TOPIC: Arrays and Strings
+
+## What is an Array
+An array is a contiguous block of memory storing elements of the same type. Elements are accessed in O(1) time using an index. Arrays have a fixed size in most languages, but dynamic arrays (like Python lists or Java ArrayLists) resize automatically by doubling capacity when full.
+
+Key properties:
+- Access by index: O(1)
+- Search (unsorted): O(n)
+- Insertion at end: O(1) amortized (dynamic array)
+- Insertion at arbitrary position: O(n) due to shifting
+- Deletion: O(n) due to shifting
+
+---
+
+## Two Pointer Technique
+Two pointers is a pattern where two indices traverse the array — often from both ends or at different speeds. Used to reduce O(n^2) brute force to O(n).
+
+Example — Two Sum in sorted array: Place one pointer at start (left=0), one at end (right=n-1). If arr[left]+arr[right] == target, found. If sum < target, move left right. If sum > target, move right left.
+
+Example — Remove duplicates in-place: Use slow pointer i and fast pointer j. When arr[j] != arr[i], increment i and copy arr[j] to arr[i].
+
+When to use: Finding pairs, reversing arrays, partitioning problems.
+
+---
+
+## Sliding Window Technique
+Sliding window maintains a contiguous subarray of variable or fixed size as it "slides" across the array. Avoids recomputing the entire window from scratch each step.
+
+Fixed window (size k): Compute sum of first k elements. For each subsequent step, add the new element and subtract the element leaving the window. O(n) vs O(n*k) brute force.
+
+Variable window: Expand right pointer, contract left pointer when a condition is violated.
+
+Example — Longest substring without repeating characters: Expand right, add char to set. If char already in set, shrink from left until it's removed. Track max length at each step.
+
+When to use: Contiguous subarrays/substrings, optimization problems, "at most k distinct elements" problems.
+
+---
+
+## Prefix Sums
+A prefix sum array where prefix[i] = sum of arr[0..i-1]. Allows range sum queries in O(1) after O(n) preprocessing.
+
+Range sum from index l to r (inclusive) = prefix[r+1] - prefix[l].
+
+Example use case: Count subarrays with sum equal to k. Use a hash map of prefix sums. For each index i, check if (prefix[i] - k) exists in the map.
+
+2D prefix sums work similarly for matrix range queries.
+
+---
+
+## Common Array Problems and Patterns
+
+Maximum Subarray (Kadane's Algorithm): Track current_sum = max(arr[i], current_sum + arr[i]). Update max_sum at each step. O(n) time, O(1) space.
+
+Product of Array Except Self: For each index, the answer is product of all elements to the left times product of all elements to the right. Two-pass approach without division. O(n) time, O(1) extra space.
+
+Rotate Array by k: Reverse entire array, reverse first k elements, reverse remaining n-k elements.
+
+Find duplicate in array of 1 to n: Floyd's cycle detection (treat array as linked list), or XOR all indices and values.
+
+---
+
+## Strings in DSA
+Strings are arrays of characters. Most string problems use the same patterns as arrays: two pointers, sliding window, hashing.
+
+Important: In Python, strings are immutable — building a result character by character should use a list and join at the end (O(n) vs O(n^2) with string concatenation).
+
+Anagram check: Sort both strings and compare (O(n log n)), or use a frequency counter hash map (O(n)).
+
+Palindrome check: Two pointers from both ends toward center. O(n) time.
+
+String matching: Naive O(n*m). KMP algorithm achieves O(n+m) using a failure function (partial match table) to avoid re-comparing matched characters.
+
+---
+
+## Time and Space Complexity Summary
+- Access: O(1)
+- Linear scan: O(n)
+- Two pointers / sliding window: O(n)
+- Prefix sum (query after build): O(1) query, O(n) build
+- Sorting-based solutions: O(n log n)
+- Brute force nested loops: O(n^2)

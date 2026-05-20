@@ -1,0 +1,102 @@
+TOPIC: Binary Search
+
+## Binary Search Fundamentals
+Binary search finds a target in a sorted array in O(log n) time by repeatedly halving the search space. Each comparison eliminates half the remaining candidates.
+
+Classic implementation:
+```python
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = left + (right - left) // 2  # avoids integer overflow
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1  # not found
+```
+
+Always use `mid = left + (right - left) // 2` instead of `(left + right) // 2` to avoid overflow in languages with fixed-size integers.
+
+---
+
+## Left Boundary and Right Boundary
+Often we need to find the first or last occurrence of a target, or the insertion position.
+
+Find leftmost position where arr[i] >= target (lower bound):
+```python
+left, right = 0, len(arr)
+while left < right:
+    mid = (left + right) // 2
+    if arr[mid] < target:
+        left = mid + 1
+    else:
+        right = mid
+return left
+```
+
+Find rightmost position where arr[i] <= target (upper bound): Similar but with `arr[mid] <= target` → `left = mid + 1`.
+
+Python's bisect module: bisect_left, bisect_right handle this.
+
+---
+
+## Binary Search on the Answer Space
+Binary search doesn't require an explicit sorted array — only a monotonic predicate. If we can ask "is X possible?" and answers form a pattern of False...False...True...True (or the reverse), binary search finds the boundary in O(log(range)) * O(check) time.
+
+Pattern: Binary search on answer, verify feasibility with a helper function.
+
+Example — Koko Eating Bananas: Can she eat all bananas in H hours with speed k? Check: sum(ceil(pile/k) for pile in piles) <= H. Binary search k from 1 to max(piles).
+
+Example — Minimum days to make m bouquets: Binary search on days. Check: can we make m bouquets from bloomed flowers?
+
+Example — Find peak element: In mountain array, if arr[mid] < arr[mid+1], peak is on right. Else on left.
+
+---
+
+## Rotated Sorted Array
+A sorted array rotated at some pivot. One half is always properly sorted.
+
+Find minimum in rotated sorted array: If arr[mid] > arr[right], minimum is in right half. Else in left half (including mid).
+
+Search in rotated sorted array: Determine which half is sorted (compare mid with left). If target is in sorted half, search there. Otherwise search other half.
+
+---
+
+## Common Binary Search Problems
+
+Search Insert Position: Find where target should be inserted. Return left after standard binary search.
+
+Find first and last position of element: Run binary search twice — once for leftmost, once for rightmost.
+
+Search a 2D Matrix: Treat as flattened 1D array. Row = mid // cols, Col = mid % cols.
+
+Square root (integer): Binary search on answer [0, x]. Find largest integer where i*i <= x.
+
+Guess number higher or lower: Classic binary search on answer space.
+
+Median of two sorted arrays: Binary search on partition point. O(log(min(m,n))).
+
+---
+
+## Template Comparison
+
+| Template | Loop Condition | When to Use |
+|----------|---------------|-------------|
+| left <= right | Basic exact match | Target may or may not exist |
+| left < right | Boundary finding | Finding first/last position |
+| left + 1 < right | Three-element reduction | Complex conditions, safer |
+
+The `left < right` template with `right = mid` (not mid-1) converges to the leftmost valid position. This is the most versatile template for "find first" problems.
+
+---
+
+## Time and Space Complexity
+- Time: O(log n) — each iteration halves search space
+- Space: O(1) iterative, O(log n) recursive (stack frames)
+
+Binary search on answer: O(log(range) * verification_cost)
+
+Binary search makes linear scans exponentially faster for sorted data. Always check if input is sorted or if problem has monotonic structure before defaulting to linear scan.

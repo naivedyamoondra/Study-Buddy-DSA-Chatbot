@@ -1,0 +1,96 @@
+TOPIC: Stacks and Queues
+
+## Stack — LIFO (Last In, First Out)
+A stack is a linear data structure where elements are added and removed from the same end (top). Think of a stack of plates.
+
+Operations (all O(1)):
+- push(val): add to top
+- pop(): remove and return top
+- peek()/top(): view top without removing
+- isEmpty(): check if empty
+
+Implementation: Python list works perfectly — append() is push, pop() is pop. Or use collections.deque.
+
+---
+
+## Monotonic Stack
+A monotonic stack maintains elements in sorted order (increasing or decreasing). As new elements arrive, pop elements that violate the monotonic property before pushing.
+
+Monotonic decreasing stack: Pop elements smaller than current. Used for "next greater element" problems.
+Monotonic increasing stack: Pop elements larger than current. Used for "next smaller element" problems.
+
+Example — Next Greater Element: For each element, use a decreasing stack. When a larger element arrives, it is the "next greater element" for all elements popped from the stack.
+
+Example — Daily Temperatures: Same pattern. Stack stores indices. When temp[i] > temp[stack.top()], the difference in indices is the wait time.
+
+Example — Largest Rectangle in Histogram: Use monotonic increasing stack. When a shorter bar is encountered, pop bars and calculate the rectangle area using the popped bar's height and current width.
+
+---
+
+## Stack Applications
+
+Balanced Parentheses: Push opening brackets. On closing bracket, check if top matches. If not, invalid. At end, stack should be empty.
+
+Expression Evaluation: Two stacks (operators and operands). Apply operator precedence rules. Or evaluate postfix (RPN) with one stack.
+
+Backtracking (implicit stack): Recursive DFS uses the call stack implicitly as a stack. Iterative DFS explicitly manages a stack.
+
+Undo/Redo operations: Two stacks — one for undo history, one for redo.
+
+Asteroid Collision (LeetCode 735): Simulate with a stack. Positive asteroids push on. Negative asteroids destroy same-sized or smaller positive asteroids at top.
+
+---
+
+## Queue — FIFO (First In, First Out)
+A queue adds elements at the rear and removes them from the front. Think of a line at a cashier.
+
+Operations (all O(1) with deque):
+- enqueue/append: add to rear
+- dequeue/popleft: remove from front
+- peek: view front without removing
+- isEmpty: check if empty
+
+Implementation: Use collections.deque in Python — O(1) for both ends. Python list has O(n) pop(0) — avoid for queues.
+
+---
+
+## Monotonic Deque (Sliding Window Maximum)
+A deque (double-ended queue) can act as a monotonic queue. Maintain a decreasing deque of indices.
+
+Sliding window maximum: As window slides right, add new element index to deque back (pop smaller elements first). Remove indices outside window from front. Front of deque is always the maximum of current window. O(n) total.
+
+---
+
+## Queue Applications
+
+BFS (Breadth-First Search): Queue stores nodes to visit level by level. Guarantees shortest path in unweighted graphs.
+
+Task scheduling: Priority queue (heap) for scheduling by priority.
+
+Level-order tree traversal: Use queue, process all nodes at each level before moving to next.
+
+---
+
+## Priority Queue (Heap)
+A priority queue always returns the minimum (min-heap) or maximum (max-heap) element.
+
+Python's heapq is a min-heap. For max-heap, negate values.
+
+Operations:
+- heappush: O(log n)
+- heappop (get min): O(log n)
+- peek (heap[0]): O(1)
+
+Common uses: Dijkstra's algorithm, Kth largest/smallest element, merge k sorted lists, task scheduling.
+
+Kth largest element: Use a min-heap of size k. When size exceeds k, pop the min. After all elements, top of heap is kth largest. O(n log k).
+
+---
+
+## Stack vs Queue vs Deque Comparison
+| Structure | Order | Use Cases |
+|-----------|-------|-----------|
+| Stack | LIFO | DFS, backtracking, expression eval |
+| Queue | FIFO | BFS, level-order traversal |
+| Deque | Both ends | Sliding window, palindrome check |
+| Priority Queue | By priority | Dijkstra, top-k problems |

@@ -1,0 +1,119 @@
+TOPIC: Recursion and Backtracking
+
+## Recursion Fundamentals
+Recursion is when a function calls itself to solve a smaller version of the same problem. Every recursive function needs:
+1. Base case: condition to stop recursion (prevents infinite loop)
+2. Recursive case: call with smaller input, moving toward base case
+3. Progress: each call must reduce the problem size
+
+Recursion uses the call stack. Each function call creates a stack frame. Deep recursion can cause stack overflow. Python's default recursion limit is 1000 (adjustable with sys.setrecursionlimit).
+
+---
+
+## Recursion Tree Analysis
+Draw the recursion tree to analyze time complexity.
+
+Fibonacci naive recursion: fib(n) branches into fib(n-1) and fib(n-2). The tree has ~2^n nodes. Time: O(2^n). With memoization: O(n).
+
+Binary search recursion: Splits problem in half each time. Tree depth = log n. Time: O(log n).
+
+Merge sort: T(n) = 2T(n/2) + O(n). By Master theorem: O(n log n).
+
+Master theorem: For T(n) = aT(n/b) + f(n), compare f(n) with n^(log_b(a)).
+
+---
+
+## Common Recursive Patterns
+
+Divide and Conquer: Split problem into independent subproblems, solve each, combine.
+Examples: Merge sort, Quick sort, Binary search, Closest pair of points.
+
+Tree recursion: Process current node, recurse on children.
+Example: Tree height = 1 + max(height(left), height(right)).
+
+Subset generation: At each step, decide to include or exclude current element.
+Example: Power set of [1,2,3] — branch on each element.
+
+Permutation generation: At each position, try all unused elements.
+Example: All permutations of [1,2,3].
+
+---
+
+## Backtracking
+Backtracking is a systematic way to search through all possible configurations. Build the solution incrementally. When a partial solution cannot lead to a valid complete solution, "backtrack" — undo the last choice and try the next.
+
+Template:
+```python
+def backtrack(path, choices):
+    if is_complete(path):
+        result.append(path[:])  # store a copy
+        return
+    for choice in choices:
+        if is_valid(path, choice):
+            path.append(choice)        # make choice
+            backtrack(path, remaining_choices)
+            path.pop()                 # undo choice (backtrack)
+```
+
+Key insight: The undo step is what makes backtracking efficient — we reuse the same path list.
+
+---
+
+## Classic Backtracking Problems
+
+Subsets: Include or exclude each element. 2^n subsets total.
+```python
+def backtrack(start, current):
+    result.append(current[:])
+    for i in range(start, len(nums)):
+        current.append(nums[i])
+        backtrack(i+1, current)
+        current.pop()
+```
+
+Permutations: At each position, try each unused number.
+```python
+def backtrack(current, used):
+    if len(current) == len(nums):
+        result.append(current[:])
+        return
+    for i in range(len(nums)):
+        if not used[i]:
+            used[i] = True
+            current.append(nums[i])
+            backtrack(current, used)
+            current.pop()
+            used[i] = False
+```
+
+Combinations: Choose k elements from n. Like subsets but fix the size.
+
+N-Queens: Place N queens on NxN board so no two attack each other. For each row, try each column. Check if column, diagonal, anti-diagonal are free. Backtrack if no valid position.
+
+Sudoku Solver: For each empty cell, try digits 1-9. Check row, column, and 3x3 box validity. Backtrack if stuck.
+
+Word Search: DFS on grid. Mark cell as visited, try 4 directions, unmark after. Avoid revisiting in current path.
+
+Palindrome Partitioning: For each prefix that is a palindrome, recurse on the rest. Add to current partition, backtrack.
+
+---
+
+## Pruning
+Pruning cuts branches that cannot lead to a valid solution early, dramatically reducing the search space.
+
+Example (combination sum with target): Sort candidates. In the recursive call, if current candidate > remaining target, break (all subsequent candidates are also too large).
+
+Example (N-Queens): Track columns and diagonals in sets. O(1) validity check instead of O(n) scan.
+
+---
+
+## Recursion vs Iteration
+Any recursion can be converted to iteration with an explicit stack. Iterative approaches avoid stack overflow risk and may be faster in practice.
+
+When to prefer recursion: Tree/graph traversal, divide and conquer, backtracking (natural fit).
+When to prefer iteration: Linear sequences, when stack depth is a concern, performance-critical code.
+
+---
+
+## Memoization in Backtracking
+If the same state is reached multiple times (e.g., same remaining string in different order), memoize to avoid recomputation. State must capture all information needed to determine future choices — be careful that identical states are truly identical.

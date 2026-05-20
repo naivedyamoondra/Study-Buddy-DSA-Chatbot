@@ -1,0 +1,109 @@
+TOPIC: Hashing and Hash Maps
+
+## Hash Functions and Hash Tables
+A hash function maps a key to an integer index. A hash table (hash map) uses this index to store key-value pairs in an array, achieving O(1) average-case lookup, insertion, and deletion.
+
+Hash function properties:
+- Deterministic: same key always gives same hash
+- Uniform distribution: minimize collisions
+- Fast to compute
+
+Python's dict and set are hash tables. Java uses HashMap and HashSet.
+
+---
+
+## Collision Resolution
+
+Chaining: Each bucket holds a linked list of entries with the same hash. Lookup: O(1) average, O(n) worst case (all keys hash to same bucket).
+
+Open Addressing: On collision, probe for the next empty slot.
+- Linear probing: check index+1, +2, +3, ...
+- Quadratic probing: check index+1, +4, +9, ...
+- Double hashing: use a second hash function for step size
+
+Python dicts use open addressing with a compact table.
+
+Load factor = (number of entries) / (table size). Rehashing occurs when load factor exceeds threshold (typically 0.7-0.75). Table doubles in size and all entries are re-inserted. Amortized O(1) insert.
+
+---
+
+## Hash Map Patterns
+
+Frequency counting: Iterate once, store count of each element. Check any frequency condition in O(n).
+```python
+from collections import Counter
+count = Counter(arr)
+```
+
+Two Sum: Store each number and its index in a hash map. For each number x, check if (target - x) exists in map. O(n) time, O(n) space vs O(n^2) brute force.
+
+Anagram grouping: Group words by their sorted character tuple (canonical form). Words with same canonical form are anagrams.
+
+Subarray sum equals k: Use prefix sums + hash map. For each index i, count how many previous prefix sums equal (prefix[i] - k). That many subarrays ending at i have sum k.
+
+Longest consecutive sequence: Insert all numbers into a set. For each number n, only start counting if (n-1) not in set (it's a sequence start). Count consecutive numbers. O(n).
+
+---
+
+## Hash Sets
+A hash set stores unique values with O(1) average add, remove, contains.
+
+Contains duplicate: Add elements to a set, check for repeats.
+Intersection of two arrays: Convert one to set, iterate the other.
+Missing number: Use set of 0..n, remove present numbers, remainder is missing. Or use math: sum(0..n) - sum(array).
+
+---
+
+## Designing a Hash Map from Scratch
+Use array of buckets (linked lists for chaining). Hash function: key % num_buckets. Operations: find bucket, then linear search in bucket's list.
+
+```python
+class HashMap:
+    def __init__(self, size=1000):
+        self.size = size
+        self.buckets = [[] for _ in range(size)]
+
+    def _hash(self, key):
+        return hash(key) % self.size
+
+    def put(self, key, val):
+        bucket = self.buckets[self._hash(key)]
+        for i, (k, v) in enumerate(bucket):
+            if k == key:
+                bucket[i] = (key, val)
+                return
+        bucket.append((key, val))
+
+    def get(self, key):
+        for k, v in self.buckets[self._hash(key)]:
+            if k == key: return v
+        return -1
+```
+
+---
+
+## OrderedDict and LRU Cache
+Python's collections.OrderedDict maintains insertion order and supports move_to_end(key). Perfect for implementing LRU cache.
+
+LRU Cache: Use OrderedDict. On get: move key to end (most recent). On put: add/update and move to end; if over capacity, pop first item (least recent). All operations O(1).
+
+---
+
+## Rolling Hash
+Used in Rabin-Karp string matching and sliding window on strings.
+
+Idea: Compute hash of a window. When sliding, subtract contribution of leftmost character, add new rightmost character. O(1) per step instead of O(L) for full recomputation.
+
+hash = (hash * base + new_char - old_char * base^L) % mod
+
+---
+
+## Time Complexity Summary
+| Operation | Average | Worst Case |
+|-----------|---------|-----------|
+| Insert | O(1) | O(n) |
+| Lookup | O(1) | O(n) |
+| Delete | O(1) | O(n) |
+| Iteration | O(n) | O(n) |
+
+Worst case occurs with many hash collisions. In practice, with a good hash function, all operations are effectively O(1).

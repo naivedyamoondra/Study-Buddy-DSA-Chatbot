@@ -1,0 +1,88 @@
+TOPIC: Linked Lists
+
+## What is a Linked List
+A linked list is a linear data structure where each element (node) contains a value and a pointer to the next node. Unlike arrays, nodes are not stored contiguously in memory.
+
+Singly linked list: Each node has `val` and `next`.
+Doubly linked list: Each node has `val`, `next`, and `prev`.
+
+Key properties vs arrays:
+- Access by index: O(n) — must traverse from head
+- Insert/delete at known position: O(1)
+- Insert/delete at arbitrary index: O(n) to find position, O(1) for operation
+- No random access, no cache locality (slower in practice than arrays for sequential scans)
+
+---
+
+## Core Operations
+
+Traversal: Start at head, follow next pointers until null.
+
+Insert at head: Create new node, set new_node.next = head, update head = new_node. O(1).
+
+Insert at tail: Traverse to last node, set last.next = new_node. O(n) without tail pointer, O(1) with tail pointer.
+
+Delete a node: Keep track of previous node, set prev.next = curr.next. Handle edge case of deleting head.
+
+Reverse a linked list (iterative): Use three pointers — prev, curr, next_node. At each step: save next_node = curr.next, set curr.next = prev, move prev = curr, move curr = next_node. Return prev at end.
+
+---
+
+## Slow and Fast Pointer (Floyd's Technique)
+Two pointers at different speeds are used for many linked list problems.
+
+Detect cycle: Slow moves 1 step, fast moves 2 steps. If they meet, there's a cycle. If fast reaches null, no cycle. O(n) time, O(1) space.
+
+Find middle of list: When fast reaches end, slow is at middle. Useful for merge sort on linked lists.
+
+Find start of cycle: After detecting cycle (slow == fast), reset one pointer to head. Advance both one step at a time. They meet at cycle start.
+
+Find kth node from end: Advance fast pointer k steps ahead, then move both until fast reaches end. Slow is at kth from end.
+
+---
+
+## Merge and Sort
+
+Merge two sorted lists: Compare heads of both lists, attach the smaller one to result, advance that pointer. Recursion or iteration both work. O(n+m) time.
+
+Merge sort on linked list: Find middle (slow/fast pointers), split into two halves, recursively sort, merge. O(n log n) time, O(log n) stack space.
+
+---
+
+## Common Patterns and Problems
+
+Remove nth node from end: Use two pointers with n gap. When right reaches end, left is at (n+1)th from end — update its next pointer.
+
+Check if palindrome: Find middle, reverse second half, compare with first half, restore (optional).
+
+Intersection of two lists: Get lengths, advance longer list by the difference, then advance both until they meet.
+
+Deep copy with random pointers: Hash map approach (O(n) space) or interleave approach (O(1) space) — insert copies between original nodes, set random pointers, then separate the two lists.
+
+---
+
+## Dummy Node Trick
+Use a dummy (sentinel) head node to simplify edge cases where the head might be modified. Example: removing all nodes with a given value — with a dummy node, you never need special handling for deleting the head.
+
+```
+dummy = ListNode(0)
+dummy.next = head
+curr = dummy
+# ... operations
+return dummy.next
+```
+
+---
+
+## Doubly Linked List Applications
+LRU Cache: Doubly linked list (for O(1) insert/delete from any position) + hash map (for O(1) lookup). Most recently used at head, least recently used at tail. On access, move node to head. On capacity exceeded, remove tail.
+
+---
+
+## Time Complexity Summary
+- Access index i: O(n)
+- Insert/delete at head: O(1)
+- Insert/delete at tail: O(1) with tail pointer, O(n) without
+- Insert/delete in middle (with reference): O(1)
+- Search: O(n)
+- Reverse: O(n)

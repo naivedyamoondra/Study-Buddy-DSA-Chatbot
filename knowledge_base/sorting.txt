@@ -1,0 +1,104 @@
+TOPIC: Sorting Algorithms
+
+## Why Sorting Matters
+Sorting is one of the most fundamental algorithmic problems. A sorted array enables binary search (O(log n) lookup). Many problems reduce to sorting: finding duplicates, merging intervals, two-sum in sorted array. Knowing which sort to use depends on data size, data type, and constraints.
+
+---
+
+## Simple Sorts (O(n^2))
+
+Bubble Sort: Repeatedly compare adjacent elements, swap if out of order. After each pass, the largest unsorted element "bubbles" to the end.
+- Best case: O(n) if already sorted (with early termination flag)
+- Worst/Average: O(n^2)
+- Space: O(1) — in-place, stable
+
+Selection Sort: Find the minimum element in unsorted portion, swap it to the front.
+- Always O(n^2) — no early termination
+- Space: O(1) — in-place, NOT stable
+
+Insertion Sort: Build sorted portion one element at a time. Take next element, insert it into its correct position in the sorted portion by shifting elements right.
+- Best case: O(n) for nearly sorted data
+- Worst/Average: O(n^2)
+- Space: O(1) — in-place, stable
+- Preferred for small arrays and nearly sorted data. Used as base case in hybrid sorts.
+
+---
+
+## Efficient Comparison Sorts (O(n log n))
+
+Merge Sort: Divide array in half recursively. Sort each half. Merge the two sorted halves.
+
+Merge step: Two pointers, one at the start of each half. Compare and pick the smaller element. O(n) for merge.
+
+- Time: O(n log n) — all cases (guaranteed)
+- Space: O(n) — not in-place (needs auxiliary array)
+- Stable: Yes
+- Great for linked lists (no random access needed for merge), external sorting, when stability required
+
+Quick Sort: Choose a pivot. Partition: all elements less than pivot go left, all greater go right. Pivot is in final position. Recursively sort left and right partitions.
+
+Lomuto partition: Pivot at end. Maintain boundary i. Scan j — if arr[j] < pivot, swap arr[i+1] and arr[j], increment i.
+
+Hoare partition: Two pointers from both ends moving inward, swap when out of order.
+
+- Average: O(n log n)
+- Worst: O(n^2) — when pivot always chosen badly (sorted array with first/last pivot)
+- Space: O(log n) stack space average
+- NOT stable
+- Fastest in practice due to cache locality and low constants. Randomized pivot avoids worst case.
+
+Heap Sort: Build a max-heap from the array. Repeatedly extract max (O(log n)) and place at end.
+- Time: O(n log n) — all cases
+- Space: O(1) — in-place
+- NOT stable
+- Slower in practice than quick sort due to poor cache behavior
+
+---
+
+## Linear Time Sorts (non-comparison based)
+
+Counting Sort: Count frequency of each value. Compute cumulative counts (positions). Place elements in output array.
+- Time: O(n + k) where k is range of values
+- Space: O(k)
+- Only works for integer keys in a known, small range
+- Stable
+
+Radix Sort: Sort by individual digits from least significant to most significant, using a stable sort (counting sort) for each digit.
+- Time: O(d * (n + k)) where d = number of digits, k = digit range (10 for decimal)
+- For fixed-length integers: O(n)
+- Stable
+
+Bucket Sort: Distribute elements into buckets, sort each bucket (usually insertion sort), concatenate.
+- Best for uniformly distributed floating point numbers in [0, 1)
+- Average: O(n) when distribution is uniform
+- Worst: O(n^2) if all elements in one bucket
+
+---
+
+## Lower Bound for Comparison Sorts
+Any comparison-based sorting algorithm requires at least Ω(n log n) comparisons in the worst case. This is proven via decision tree argument — sorting n elements requires distinguishing n! permutations, and a binary tree of height h has at most 2^h leaves, so h ≥ log2(n!).
+
+Non-comparison sorts bypass this limit by exploiting properties of the data.
+
+---
+
+## Choosing the Right Sort
+
+| Situation | Best Choice |
+|-----------|-------------|
+| General purpose | Quick sort (randomized) |
+| Stability required | Merge sort |
+| Nearly sorted data | Insertion sort |
+| Integer keys, small range | Counting sort |
+| Linked list | Merge sort |
+| Memory constrained | Heap sort |
+| Uniform distribution | Bucket sort |
+
+Python's built-in sort (Timsort): Hybrid of merge sort and insertion sort. O(n log n) worst case, O(n) for nearly sorted. Stable.
+
+---
+
+## Merge Intervals Pattern
+Sort intervals by start time. Iterate, merging overlapping intervals. Two intervals [a,b] and [c,d] overlap if c <= b.
+
+This pattern applies to: meeting rooms, insert interval, non-overlapping intervals.
